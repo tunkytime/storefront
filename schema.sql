@@ -16,11 +16,11 @@ CREATE TABLE products (
 INSERT INTO products
 (product_name, department_name, price, stock_quantity)
 VALUES
-("weekly kit", "stickers", "15.95", "20")
-("mini kit", "stickers", "15.95", "20")
-("single sheet", "stickers", "15.95", "20")
-("sticker album", "accessories", "14.95", "20")
-("pen", "accessories", "2.50", "20")
-("sticky notes", "accessories", "3.00", "20")
-("tanktop", "apparel", "18.95", "20")
-("t-shirt", "apparel", "24.95", "20")
+("Weekly Kit", "Stickers", "15.95", "20"),
+("Mini Kit", "Stickers", "15.95", "20"),
+("Single Sheet", "Stickers", "3.00", "20"),
+("Sticker Album", "Accessories", "14.95", "20"),
+("Ballpoint Pen", "Accessories", "2.50", "20"),
+("Sticky Notes", "Accessories", "3.00", "20"),
+("Tanktop", "Apparel", "18.95", "20"),
+("T-Shirt", "Apparel", "24.95", "20")
