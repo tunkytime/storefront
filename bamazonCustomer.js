@@ -5,7 +5,7 @@ var connection = mysql.createConnection({
     host: "localHost",
     port: 3306,
     user: "root",
-    password: "",
+    password: "root",
     database: "bamazon"
 });
 
@@ -56,10 +56,10 @@ function shopProducts() {
         type: "input",
         message: `What is the "item_id" of the product you would like to buy?`,
         validate: function (value) {
-            if (isNaN(value) === false) {
+            if (value !== "" && isNaN(value) === false) {
                 return true;
             }
-            console.log(` Please enter a valid "item_id".`)
+            console.log(` Please enter a valid "item_id"`);
             return false;
         }
     }, {
@@ -67,10 +67,10 @@ function shopProducts() {
         type: "input",
         message: "How many would you like to buy?",
         validate: function (value) {
-            if (isNaN(value) === false) {
+            if (value !== "" && isNaN(value) === false) {
                 return true;
             }
-            console.log(" Please enter a valid number.")
+            console.log(" Please enter a valid quantity");
             return false;
         }
     }]).then(function (answer) {
@@ -108,6 +108,8 @@ function getTotal(id, qty) {
         item_id: id
     }, function (err, res) {
         if (err) throw err;
-        console.log(res);
+        var total = parseFloat(res[0].price) * parseInt(qty);
+        console.log(`Your total is: $${parseFloat(total)}`);
+        connection.end();
     });
 };
