@@ -24,3 +24,13 @@ VALUES
 ("Sticky Notes", "Accessories", "3.00", "20"),
 ("Tanktop", "Apparel", "18.95", "20"),
 ("T-Shirt", "Apparel", "24.95", "20")
+
+-- Select low inventory
+SELECT item_id, product_name, department_name, stock_quantity 
+FROM products 
+WHERE stock_quantity<10;
+
+-- Add inventory
+UPDATE products
+SET stock_quantity = stock_quantity+5
+WHERE item_id = 1;
