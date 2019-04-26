@@ -16,7 +16,7 @@ CREATE TABLE products (
 INSERT INTO products
 (product_name, department_name, price, stock_quantity)
 VALUES
-("Weekly Kit", "Stickers", "15.95", "20"),
+("Weekly Kit", "Stickers", "15.95", "20");
 ("Mini Kit", "Stickers", "15.95", "20"),
 ("Single Sheet", "Stickers", "3.00", "20"),
 ("Sticker Album", "Accessories", "14.95", "20"),
