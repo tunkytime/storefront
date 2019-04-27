@@ -32,11 +32,11 @@ function displayProducts(res) {
     for (var i = 0; i < res.length; i++) {
         var id = res[i].item_id;
         var name = res[i].product_name;
-        var category = res[i].department_name;
+        var department = res[i].department_name;
         var price = res[i].Price;
         var qty = res[i].stock_quantity;
         console.log(
-            `Item #: ${id} || Product: ${name} || Category: ${category} ---------- ${price} (${qty} left)`
+            `Item #: ${id} || Product: ${name} || Department: ${department} ---------- ${price} (${qty} left)`
         );
     }
     console.log(`\n${divider}`);
@@ -48,15 +48,15 @@ function startMenu() {
             name: "action",
             type: "list",
             message: "What would you like to do?",
-            choices: ["Shop all products", "Shop by category", "Exit"]
+            choices: ["Shop all products", "Shop by department", "Exit"]
         })
         .then(function (answer) {
             switch (answer.action) {
                 case "Shop all products":
                     shopProducts();
                     break;
-                case "Shop by category":
-                    shopByCategory();
+                case "Shop by department":
+                    shopByDepartment();
                     break;
                 case "Exit":
                     connection.end();
@@ -97,31 +97,31 @@ function shopProducts() {
         });
 }
 
-function shopByCategory() {
+function shopByDepartment() {
     inquirer
         .prompt({
-            name: "category",
+            name: "department",
             type: "list",
-            message: `Select a category.`,
+            message: `Select a department.`,
             choices: ["Stickers", "Accessories", "Apparel"],
             validate: function (value) {
                 if (value !== "") {
                     return true;
                 }
-                console.log(` Please select a valid category`);
+                console.log(` Please select a valid department`);
                 return false;
             }
         })
         .then(function (answer) {
-            showProductsFromCat(answer.category);
+            showProductsFromDept(answer.department);
         });
 }
 
-function showProductsFromCat(cat) {
+function showProductsFromDept(dept) {
     var query = `SELECT item_id, product_name, department_name, 
     CONCAT("$", price) AS Price, stock_quantity FROM products WHERE ?`;
     connection.query(query, {
-        department_name: cat
+        department_name: dept
     }, function (err, res) {
         if (err) throw err;
         displayProducts(res);

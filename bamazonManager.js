@@ -71,10 +71,10 @@ function displayProducts(res) {
     for (var i = 0; i < res.length; i++) {
         var id = res[i].item_id;
         var name = res[i].product_name;
-        var category = res[i].department_name;
+        var department = res[i].department_name;
         var qty = res[i].stock_quantity;
         console.log(
-            `Item #: ${id} || Product: ${name} || Category: ${category} || Quantity: ${qty}`
+            `Item #: ${id} || Product: ${name} || Department: ${department} || Quantity: ${qty}`
         );
     }
     console.log(`\n${divider}`);
@@ -163,15 +163,15 @@ function addProduct() {
             return false;
         }
     }, {
-        name: "category",
+        name: "department",
         type: "list",
-        message: "Enter the category:",
+        message: "Enter the department:",
         choices: ["Stickers", "Accessories", "Apparel"],
         validate: function (value) {
             if (value !== "") {
                 return true;
             }
-            console.log(" Please choose a category.");
+            console.log(" Please choose a department.");
             return false;
         }
     }, {
@@ -197,12 +197,12 @@ function addProduct() {
             return false;
         }
     }]).then(function (answer) {
-        addProductDB(answer.name, answer.category, answer.price, answer.qty);
+        addProductDB(answer.name, answer.department, answer.price, answer.qty);
     })
 };
 
-function addProductDB(name, cat, price, qty) {
-    var query = `INSERT INTO products (product_name, department_name, price, stock_quantity) VALUES ("${name}", "${cat}", "${price}", "${qty}")`;
+function addProductDB(name, dept, price, qty) {
+    var query = `INSERT INTO products (product_name, department_name, price, stock_quantity) VALUES ("${name}", "${dept}", "${price}", "${qty}")`;
     connection.query(query, function (err) {
         if (err) throw err;
         console.log(`\n${divider}\nSuccessfully added product!\n${divider}\n`);
