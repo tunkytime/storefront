@@ -39,26 +39,27 @@ function startMenu() {
             switch (answer.action) {
                 case "View Products":
                     viewProducts();
+                    setTimeout(startMenu, 500);
                     break;
                 case "View Low Inventory":
                     viewInventory();
                     break;
                 case "Add Inventory":
                     viewProducts();
-                    setTimeout(addInventory, 1000);
+                    setTimeout(addInventory, 500);
                     break;
                 case "Add New Product":
-                    // addProduct();
+                    addProduct();
                     break;
                 case "Exit":
                     connection.end();
                     break;
             }
         });
-}
+};
 
 function viewProducts() {
-    var query = `SELECT item_id, product_name, department_name, stock_quantity FROM products`;
+    var query = `SELECT item_id, product_name, department_name, stock_quantity FROM products ORDER BY department_name`;
     connection.query(query, function (err, res) {
         if (err) throw err;
         displayProducts(res);
@@ -88,7 +89,26 @@ function viewInventory() {
             startMenu();
         } else {
             displayProducts(res);
-            // addInventory();
+            inquirer
+                .prompt({
+                    name: "action",
+                    type: "list",
+                    message: "What would you like to do?",
+                    choices: ["Add Inventory", "Back to Main Menu", "Exit"]
+                })
+                .then(function (answer) {
+                    switch (answer.action) {
+                        case "Add Inventory":
+                            addInventory();
+                            break;
+                        case "Back to Main Menu":
+                            startMenu();
+                            break;
+                        case "Exit":
+                            connection.end();
+                            break;
+                    }
+                });
         }
     })
 };
@@ -125,7 +145,67 @@ function addInventoryDB(id, qty) {
     var query = `UPDATE products SET stock_quantity=stock_quantity+${qty} WHERE item_id=${id}`;
     connection.query(query, function (err) {
         if (err) throw err;
-        console.log(`\n${divider}\nSuccess!\n${divider}\n`);
+        console.log(`\n${divider}\nSuccessfully updated inventory!\n${divider}\n`);
+        startMenu();
+    })
+};
+
+function addProduct() {
+    inquirer.prompt([{
+        name: "name",
+        type: "input",
+        message: `Enter the product name:`,
+        validate: function (value) {
+            if (value !== "") {
+                return true;
+            }
+            console.log(` Please enter a valid name.`);
+            return false;
+        }
+    }, {
+        name: "category",
+        type: "list",
+        message: "Enter the category:",
+        choices: ["Stickers", "Accessories", "Apparel"],
+        validate: function (value) {
+            if (value !== "") {
+                return true;
+            }
+            console.log(" Please choose a category.");
+            return false;
+        }
+    }, {
+        name: "price",
+        type: "input",
+        message: "Enter the price:",
+        validate: function (value) {
+            if (value !== "" && isNaN(value) === false) {
+                return true;
+            }
+            console.log(` Please enter a valid price.`);
+            return false;
+        }
+    }, {
+        name: "qty",
+        type: "input",
+        message: "Enter the quantity:",
+        validate: function (value) {
+            if (value !== "" && isNaN(value) === false) {
+                return true;
+            }
+            console.log(` Please enter a valid quantity.`);
+            return false;
+        }
+    }]).then(function (answer) {
+        addProductDB(answer.name, answer.category, answer.price, answer.qty);
+    })
+};
+
+function addProductDB(name, cat, price, qty) {
+    var query = `INSERT INTO products (product_name, department_name, price, stock_quantity) VALUES ("${name}", "${cat}", "${price}", "${qty}")`;
+    connection.query(query, function (err) {
+        if (err) throw err;
+        console.log(`\n${divider}\nSuccessfully added product!\n${divider}\n`);
         startMenu();
     })
 };
