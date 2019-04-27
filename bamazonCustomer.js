@@ -1,46 +1,22 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+var Table = require("cli-table");
 var divider = "===========================================================";
 var connection = mysql.createConnection({
     host: "localHost",
     port: 3306,
     user: "root",
-    password: "",
+    password: "root",
     database: "bamazon"
 });
 
 connection.connect(function (err) {
     if (err) throw err;
     console.log(
-        `${divider}\nWelcome to my store! Here's a look at available products:\n${divider}`
+        `${divider}\nWelcome to Bamazon! Here's a look at available products:\n${divider}`
     );
-    readProducts();
+    startMenu();
 });
-
-function readProducts() {
-    var query = `SELECT item_id, product_name, department_name, 
-    CONCAT("$", price) AS Price, stock_quantity FROM products`;
-    connection.query(query, function (err, res) {
-        if (err) throw err;
-        displayProducts(res);
-        startMenu();
-    });
-}
-
-function displayProducts(res) {
-    console.log();
-    for (var i = 0; i < res.length; i++) {
-        var id = res[i].item_id;
-        var name = res[i].product_name;
-        var department = res[i].department_name;
-        var price = res[i].Price;
-        var qty = res[i].stock_quantity;
-        console.log(
-            `Item #: ${id} || Product: ${name} || Department: ${department} ---------- ${price} (${qty} left)`
-        );
-    }
-    console.log(`\n${divider}`);
-}
 
 function startMenu() {
     inquirer
@@ -53,7 +29,8 @@ function startMenu() {
         .then(function (answer) {
             switch (answer.action) {
                 case "Shop all products":
-                    shopProducts();
+                    readProducts();
+                    setTimeout(shopProducts, 500);
                     break;
                 case "Shop by department":
                     shopByDepartment();
@@ -63,6 +40,33 @@ function startMenu() {
                     break;
             }
         });
+}
+
+function readProducts() {
+    var query = `SELECT item_id, product_name, department_name, 
+    CONCAT("$", price) AS Price, stock_quantity FROM products`;
+    connection.query(query, function (err, res) {
+        if (err) throw err;
+        displayProducts(res);
+    });
+}
+
+function displayProducts(res) {
+    console.log();
+    var table = new Table({
+        head: ['Item #', 'Product', 'Department', 'Price', 'Qty'],
+        colWidths: [8, 15, 15, 10, 5]
+    });
+    for (var i = 0; i < res.length; i++) {
+        var id = res[i].item_id;
+        var name = res[i].product_name;
+        var department = res[i].department_name;
+        var price = res[i].Price;
+        var qty = res[i].stock_quantity;
+        table.push([id, name, department, price, qty]);
+    }
+    console.log(table.toString());
+    console.log(`\n${divider}`);
 }
 
 function shopProducts() {
