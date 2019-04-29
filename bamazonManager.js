@@ -6,14 +6,27 @@ var connection = mysql.createConnection({
   host: "localHost",
   port: 3306,
   user: "root",
-  password: "root",
+  password: "",
   database: "bamazon"
 });
 
+var departments = [];
+
 connection.connect(function (err) {
   if (err) throw err;
+  departmentsList();
   getName();
 });
+
+function departmentsList() {
+  var query = "SELECT * FROM departments";
+  connection.query(query, function (err, res) {
+    if (err) throw err;
+    for (var i = 0; i < res.length; i++) {
+      departments.push(res[i].department_name);
+    }
+  })
+};
 
 function getName() {
   inquirer
@@ -66,7 +79,7 @@ function startMenu() {
 }
 
 function viewProducts() {
-  var query = `SELECT item_id, product_name, department_name, stock_quantity FROM products ORDER BY department_name`;
+  var query = `SELECT item_id, product_name, department_name, stock_quantity FROM products ORDER BY item_id`;
   connection.query(query, function (err, res) {
     if (err) throw err;
     displayProducts(res);
@@ -183,7 +196,10 @@ function addProduct() {
         name: "department",
         type: "list",
         message: "Enter the department:",
-        choices: ["Stickers", "Accessories", "Apparel"],
+
+        choices: departments,
+
+        // choices: ["Stickers", "Accessories", "Apparel"],
         validate: function (value) {
           if (value !== "") {
             return true;
@@ -223,10 +239,10 @@ function addProduct() {
 }
 
 function addProductDB(name, dept, price, qty) {
-  var query = `INSERT INTO products (product_name, department_name, price, stock_quantity) VALUES ("${name}", "${dept}", "${price}", "${qty}")`;
+  var query = `INSERT INTO products (product_name, department_name, price, stock_quantity, product_sales) VALUES ("${name}", "${dept}", "${price}", "${qty}", "0")`;
   connection.query(query, function (err) {
     if (err) throw err;
-    console.log(`\n${divider}\nSuccessfully added product!\n${divider}\n`);
+    console.log(`\n${divider}\nSuccessfully added ${name}!\n${divider}\n`);
     startMenu();
   });
 }

@@ -6,14 +6,14 @@ var connection = mysql.createConnection({
     host: "localHost",
     port: 3306,
     user: "root",
-    password: "root",
+    password: "",
     database: "bamazon"
 });
 
 connection.connect(function (err) {
     if (err) throw err;
     console.log(
-        `${divider}\nWelcome to Bamazon! Here's a look at available products:\n${divider}`
+        `${divider}\nWelcome to Bamazon!\n${divider}`
     );
     startMenu();
 });
@@ -30,7 +30,6 @@ function startMenu() {
             switch (answer.action) {
                 case "Shop all products":
                     readProducts();
-                    setTimeout(shopProducts, 500);
                     break;
                 case "Shop by department":
                     shopByDepartment();
@@ -53,6 +52,7 @@ function readProducts() {
 
 function displayProducts(res) {
     console.log();
+    var max = 0;
     var table = new Table({
         head: ['Item #', 'Product', 'Department', 'Price', 'Qty'],
         colWidths: [8, 15, 15, 10, 5]
@@ -64,19 +64,21 @@ function displayProducts(res) {
         var price = res[i].Price;
         var qty = res[i].stock_quantity;
         table.push([id, name, department, price, qty]);
+        max = Math.max([res[i].item_id])
     }
     console.log(table.toString());
     console.log(`\n${divider}`);
+    shopProducts(max);
 }
 
-function shopProducts() {
+function shopProducts(max) {
     inquirer
         .prompt([{
                 name: "id",
                 type: "input",
                 message: `What is the "Item #" of the product you would like to buy?`,
                 validate: function (value) {
-                    if (value !== "" && isNaN(value) === false) {
+                    if (value !== "" && isNaN(value) === false && value <= max) {
                         return true;
                     }
                     console.log(` Please enter a valid "Item #"`);
@@ -97,7 +99,7 @@ function shopProducts() {
             }
         ])
         .then(function (answer) {
-            inventoryCheck(answer.id, answer.qty);
+            inventoryCheck(answer.id, answer.qty, max);
         });
 }
 
@@ -129,11 +131,11 @@ function showProductsFromDept(dept) {
     }, function (err, res) {
         if (err) throw err;
         displayProducts(res);
-        shopProducts();
     });
 }
 
-function inventoryCheck(id, qty) {
+function inventoryCheck(id, qty, max) {
+    var qtyDB;
     var query = "SELECT * FROM products WHERE ?";
     connection.query(
         query, {
@@ -141,8 +143,14 @@ function inventoryCheck(id, qty) {
         },
         function (err, res) {
             if (err) throw err;
-            if (res.stock_quantity < 1) {
+            for (var i = 0; i < res.length; i++) {
+                qtyDB = res[i].stock_quantity;
+            }
+            if (qtyDB < 1 || qtyDB < qty) {
+                console.log(divider);
                 console.log("Insufficient quantity!");
+                console.log(divider);
+                shopProducts(max);
             } else {
                 updateQty(id, qty);
             }
@@ -173,11 +181,20 @@ function getTotal(id, qty) {
             if (err) throw err;
             var total = parseFloat(res[0].price) * parseInt(qty);
             console.log(
-                `\n${divider}\nCha ching!! Thanks for your order.\nYour total is: $${parseFloat(
-          total
-        )}\n${divider}`
+                `\n${divider}\nCha ching!! Thanks for your order.\nYour total is: $${parseFloat(total)}\n${divider}`
             );
+            updateProductSales(id, total);
             startMenu();
         }
     );
 }
+
+function updateProductSales(id, total) {
+    var query = `UPDATE products SET product_sales = (product_sales + ${total}) WHERE ?`;
+    connection.query(query, {
+            item_id: id
+        }),
+        function (err) {
+            if (err) throw err;
+        }
+};

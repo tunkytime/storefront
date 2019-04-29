@@ -34,3 +34,12 @@ WHERE stock_quantity<10;
 UPDATE products
 SET stock_quantity = stock_quantity+5
 WHERE item_id = 1;
+
+-- Left join to create View Product Sales by Department
+SELECT departments.department_id, departments.department_name, 
+SUM(products.product_sales) AS product_sales, departments.overhead_costs, 
+(SUM(products.product_sales)-departments.overhead_costs) AS total_profit
+FROM departments
+LEFT JOIN products ON products.department_name = departments.department_name
+GROUP BY department_name
+ORDER BY departments.department_id;
