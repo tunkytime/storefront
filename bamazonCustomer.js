@@ -6,7 +6,7 @@ var connection = mysql.createConnection({
     host: "localHost",
     port: 3306,
     user: "root",
-    password: "",
+    password: "root",
     database: "bamazon"
 });
 
@@ -15,8 +15,21 @@ connection.connect(function (err) {
     console.log(
         `${divider}\nWelcome to Bamazon!\n${divider}`
     );
+    departmentsList();
     startMenu();
 });
+
+var departments = [];
+
+function departmentsList() {
+    var query = "SELECT * FROM departments";
+    connection.query(query, function (err, res) {
+        if (err) throw err;
+        for (var i = 0; i < res.length; i++) {
+            departments.push(res[i].department_name);
+        }
+    })
+};
 
 function startMenu() {
     inquirer
@@ -109,7 +122,7 @@ function shopByDepartment() {
             name: "department",
             type: "list",
             message: `Select a department.`,
-            choices: ["Stickers", "Accessories", "Apparel"],
+            choices: departments,
             validate: function (value) {
                 if (value !== "") {
                     return true;
@@ -181,7 +194,7 @@ function getTotal(id, qty) {
             if (err) throw err;
             var total = parseFloat(res[0].price) * parseInt(qty);
             console.log(
-                `\n${divider}\nCha ching!! Thanks for your order.\nYour total is: $${parseFloat(total)}\n${divider}`
+                `\n${divider}\nWahoo!! Thanks for your order.\nYour total is: $${parseFloat(total)}\n${divider}`
             );
             updateProductSales(id, total);
             startMenu();

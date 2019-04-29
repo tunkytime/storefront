@@ -6,17 +6,17 @@ var connection = mysql.createConnection({
   host: "localHost",
   port: 3306,
   user: "root",
-  password: "",
+  password: "root",
   database: "bamazon"
 });
-
-var departments = [];
 
 connection.connect(function (err) {
   if (err) throw err;
   departmentsList();
   getName();
 });
+
+var departments = [];
 
 function departmentsList() {
   var query = "SELECT * FROM departments";

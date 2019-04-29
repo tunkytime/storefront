@@ -6,14 +6,27 @@ var connection = mysql.createConnection({
     host: "localHost",
     port: 3306,
     user: "root",
-    password: "",
+    password: "root",
     database: "bamazon"
 });
 
 connection.connect(function (err) {
     if (err) throw err;
-    startMenu();
+    getName();
 });
+
+function getName() {
+    inquirer
+        .prompt({
+            name: "name",
+            type: "input",
+            message: "Who are you?"
+        })
+        .then(function (answer) {
+            console.log(`${divider}\nWelcome ${answer.name}.\n${divider}`);
+            startMenu();
+        });
+}
 
 function startMenu() {
     inquirer
