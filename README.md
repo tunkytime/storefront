@@ -6,7 +6,7 @@ Check out this Amazon-like storefront created using MySQL. The app receives orde
 
 ### Customer View
 
-![Customer View](images/customerHome.png)
+![Customer View](images/customerHome.jpg)
 
 `Shop all products`
 
@@ -18,7 +18,7 @@ Check out this Amazon-like storefront created using MySQL. The app receives orde
 
 ### Manager View
 
-![Manager View](images/managerHome.png)
+![Manager View](images/managerHome.jpg)
 
 `View Products`
 
@@ -30,10 +30,18 @@ Check out this Amazon-like storefront created using MySQL. The app receives orde
 
 `View Low Inventory`
 
-![View Low Inventory](images/viewInventory.png)
+![View Low Inventory](images/viewInventory.jpg)
 
 `Add Inventory`
 
 ![Add Inventory](images/addInventory.gif)
 
 ### Supervisor View
+
+`View Product Sales by Department`
+
+![View Product Sales](images/supervisor.gif)
+
+`Create Department`
+
+![Create Department](images/supervisorCreate.jpg)
