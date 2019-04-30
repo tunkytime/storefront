@@ -44,4 +44,4 @@ Check out this Amazon-like storefront created using MySQL. The app receives orde
 
 `Create Department`
 
-![Create Department](images/supervisorCreate.jpg)
+![Create Department](images/supervisorCreate.JPG)
